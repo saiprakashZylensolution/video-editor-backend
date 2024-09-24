@@ -14,8 +14,6 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-
-
 Router.post('/uploadfiles', upload.fields([{ name: 'images', maxCount: 10 }, { name: 'video', maxCount: 1 }]),mergeFiles.mergeFiles)
 
 module.exports = Router
