@@ -14,13 +14,16 @@ module.exports.mergeFiles = (req, res) => {
   const outputVideoPath = path.join(__dirname, 'uploads', `merged-${Date.now()}.mp4`); // Output file path
   const tempImageVideos = [];
 
+  console.log(req.files)
 
   if (!images || images.length === 0) {
     return res.status(400).send('No images uploaded.');
   }
   // Function to process each image
   const processImages = (index) => {
+    console.log(index,images)
     if (index >= images.length) {
+        console.log('yes')
       concatenateVideos(); // Once all images are processed, concatenate
       return;
     }
@@ -38,6 +41,7 @@ module.exports.mergeFiles = (req, res) => {
       .on('end', () => {
         console.log(`Image video ${index} created successfully!`);
         tempImageVideos.push(tempImageVideo); // Store the path
+        fs.unlinkSync(imageFile)
         processImages(index + 1); // Process the next image
       })
       .on('error', (err) => {
@@ -76,6 +80,7 @@ module.exports.mergeFiles = (req, res) => {
         res.sendFile(outputVideoPath, (err) => {
           // Cleanup temporary files
           tempImageVideos.forEach(file => fs.unlinkSync(file));
+
           fs.unlinkSync(videoFile); // Optionally, clean up the uploaded video as well
           if (err) {
             console.error('Error sending file:', err);
